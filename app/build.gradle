@@ -4,6 +4,14 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
+repositories {
+    maven { url "https://raw.githubusercontent.com/smilefam/SendBird-SDK-Android/master/" }
+    mavenCentral()
+    google()
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -12,6 +20,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,13 +29,44 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    sourceSets {
+        main {
+            main.java.srcDirs += 'src/main/kotlin'
+            res.srcDirs =
+                    [
+                            'src/main/res/layouts/activity',
+                            'src/main/res/layouts/fragment',
+                            'src/main/res/layouts/toolbar',
+                            'src/main/res/layouts',
+                            'src/main/res'
+                    ]
+        }
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    /*dataBinding {
+        enabled = true
+    }*/
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'SENDBIRD_API_ID', SENDBIRD_API_ID
+        it.buildConfigField 'String', 'SENDBIRD_API_TOKEN', SENDBIRD_API_TOKEN
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    kapt 'com.android.databinding:compiler:3.1.4'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.sendbird.sdk:sendbird-android-sdk:3.0.65'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
